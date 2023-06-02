@@ -1,0 +1,16 @@
+def select_face():
+    args['source_img'] = filedialog.askopenfilename(title="Select a face")
+    preview_image(args['source_img'])
+
+
+def select_target():
+    args['target_path'] = filedialog.askopenfilename(title="Select a target")
+    threading.Thread(target=preview_video, args=(args['target_path'],)).start()
+
+
+def toggle_fps_limit():
+    args['keep_fps'] = int(limit_fps.get() != True)
+
+
+def toggle_keep_frames():
+    args['keep_frames'] = int(keep_frames.get())
