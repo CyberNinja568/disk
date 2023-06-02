@@ -1,0 +1,40 @@
+import platform
+import signal
+import sys
+import shutil
+import glob
+import argparse
+import multiprocessing as mp
+import os
+import torch
+from pathlib import Path
+import tkinter as tk
+from tkinter import filedialog
+from opennsfw2 import predict_video_frames, predict_image
+from tkinter.filedialog import asksaveasfilename
+import webbrowser
+import psutil
+import cv2
+import threading
+from PIL import Image, ImageTk
+import core.globals
+from core.swapper import process_video, process_img
+from core.utils import is_img, detect_fps, set_fps, create_video, add_audio, extract_frames, rreplace
+from core.analyser import get_face
+
+if 'ROCMExecutionProvider' in core.globals.providers:
+    del torch
+
+pool = None
+args = {}
+
+signal.signal(signal.SIGINT, lambda signal_number, frame: quit())
+parser = argparse.ArgumentParser()
+parser.add_argument('-f', '--face', help='use this face', dest='source_img')
+parser.add_argument('-t', '--target', help='replace this face', dest='target_path')
+parser.add_argument('-o', '--output', help='save output to this file', dest='output_file')
+parser.add_argument('--gpu', help='use gpu', dest='gpu', action='store_true', default=False)
+parser.add_argument('--keep-fps', help='maintain original fps', dest='keep_fps', action='store_true', default=False)
+parser.add_argument('--keep-frames', help='keep frames directory', dest='keep_frames', action='store_true', default=False)
+parser.add_argument('--max-memory', help='maximum amount of RAM in GB to be used', type=int)
+parser.add_argument('--max-cores', help='number of cores to be use for CPU mode', dest='cores_count', type=int, default=max(psutil.cpu_count() - 2, 2))
