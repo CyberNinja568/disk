@@ -11,24 +11,28 @@ from pathlib import Path
 import tkinter as tk
 from tkinter import filedialog
 from opennsfw2 import predict_video_frames, predict_image
-from tkinter.filedialog import asksaveasfilename
-import webbrowser
-import psutil
-import cv2
-import threading
-from PIL import Image, ImageTk
-import core.globals
-from core.swapper import process_video, process_img
-from core.utils import is_img, detect_fps, set_fps, create_video, add_audio, extract_frames, rreplace
-from core.analyser import get_face
+from sqlalchemy import create_engine
+from superagi.config.config import get_config
+from sqlalchemy.orm import sessionmaker, query
+from superagi.tools.base_tool import BaseTool
+import os
+import inspect
+import requests
+app = FastAPI()
 
-if 'ROCMExecutionProvider' in core.globals.providers:
-    del torch
-
-pool = None
-args = {}
 database_url = get_config('POSTGRES_URL')
 db_username = get_config('DB_USERNAME')
 db_password = get_config('DB_PASSWORD')
 db_name = get_config('DB_NAME')
+
+if db_username is None:
+    db_url = f'postgresql://{database_url}/{db_name}'
+else:
+    db_url = f'postgresql://{db_username}:{db_password}@{database_url}/{db_name}'
+
+engine = create_engine(db_url)
+# SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# app.add_middleware(DBSessionMiddleware, db_url=f'postgresql://{db_username}:{db_password}@localhost/{db_name}')
+app.add_middleware(DBSessionMiddleware, db_url=db_url)
 
