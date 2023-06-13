@@ -1,0 +1,21 @@
+ask_to_auto_reload() {
+  auto_reload_valid=0
+  auto_reload_final=0
+  while [ "$auto_reload_valid" == 0 ]
+  do
+    echo "Automagically reload the project when source files are changed?"
+    echo "ONLY ENABLE THIS FOR DEVELOPMENT!"
+    read -p "(y/n) " auto_reload
+    case "$auto_reload" in
+      [yY]* ) auto_reload_valid=1; auto_reload_final=1;;
+      [nN]* ) auto_reload_valid=1; auto_reload_final=0;;
+      * ) yes_no_prompt_invalid;;
+    esac
+    echo
+  done
+  if [ "$auto_reload_final" = 1 ]
+  then
+    cd ui && yarn start
+    cd server && cargo watch -x run
+  fi
+}
