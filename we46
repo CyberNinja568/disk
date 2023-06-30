@@ -4,7 +4,6 @@ ask_to_auto_reload() {
   while [ "$auto_reload_valid" == 0 ]
   do
     echo "Automagically reload the project when source files are changed?"
-    echo "ONLY ENABLE THIS FOR DEVELOPMENT!"
     read -p "(y/n) " auto_reload
     case "$auto_reload" in
       [yY]* ) auto_reload_valid=1; auto_reload_final=1;;
