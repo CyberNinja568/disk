@@ -6,8 +6,6 @@ from typing import Any, Dict
 sys.path.append(Path(__file__).parent.parent)
 
 from llama_hub.file.base import SimpleDirectoryReader
-
-
 def test_recursive() -> None:
     """Test simple directory reader in recursive mode."""
     # test recursive
